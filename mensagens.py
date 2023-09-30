@@ -27,3 +27,23 @@ Caso seja necessário, logo logo iremos entrar em contato. 📞
 refazer = """hum.. Entendi, então vamos recomeçar! 🔄 
 Informe o seu nome completo por favor:
 """
+
+atendimento = "Okay. Me informe o seu CPF e nome completo e descreva o motivo do atendimento para darmos sequência."
+
+atendimento_finaliza = """Atendimetno registrado. Logo logo alguém da nossa equipe irá te responder. 
+Você também pode falar conosco através do e-mail: email@email.com"""
+
+finalizado = 'processo_finalizado'
+
+elses = "Não entendi... Vamos tentar novamente! Digite o número do atendimento desejado ou digite REINICIAR para recomeçarmos."
+
+emails = "Agora informe seu e-mail, caso não tenha, digite 1."
+
+dts = """Hum... A data de nascimento não está no formato correto, vamos tentar de novo, okay?
+Digite novamente a sua data de nascimento no seguinte formato: DD/MM/AAAA.
+Exemplo: 01/01/1990
+"""
+
+reiniciar = """Verifiquei que recentemente você falou conosco. Já estamos dando seguimento com a sua solicitação
+Mas caso queira um novo atendimento, escreva REINICIAR.
+"""
