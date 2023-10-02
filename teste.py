@@ -1,28 +1,67 @@
-import win32com.client as win32
+from playwright.sync_api import Playwright, sync_playwright, expect
+import time
+import pandas as pd
 
-# Inicia o Outlookdd
 
-outlook = win32.Dispatch('outlook.application')
+# Inicia no navegador
+def run(playwright: Playwright) -> None:
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
 
-email = outlook.CreateItem(0)
+    # Abre a guia
+    page = context.new_page()
+    page.goto("https://web.whatsapp.com")
 
-email.To = 'enviar@para.com.br'  # para
+    print('iniciando')
 
-email.Subject = 'Teste'  # assunto
+    # Ler a planilha
+    Sheet1_df = pd.read_excel("suaplanilha.xlsx")
+    for i, DADOS in enumerate(Sheet1_df['Nome']):
+        Nome = Sheet1_df.loc[i, "Nome"]
+        Telefone = Sheet1_df.loc[i, "Telefone"]
 
-anexo = "caminho//arquivo.tipo"  # caminho
+        print(Nome, Telefone)
 
-email.Attachments.Add(anexo)
+        # variavel para envio da mensagem
+        text = "&text="
 
-# texto
+        # Saudação + nome da planilha
+        msgg = "Olá "+str(Nome)
 
-conteudo = f""" Bom dia """
+        # Mensagem após saudação + nome
+        msg = " Teste"
 
-# estilização
+        # Link já com o número e mensagens prontas pra envio (unifica todas as variaveis anteriores
+        link = "https://web.whatsapp.com/send?phone=" + \
+            str(Telefone)+str(text)+str(msgg)+str(msg)
 
-css = "<style> .email p { font-size: 20px; font-family: Arial, Helvetica, sans-serif;}</style>"
+        # Aqui é um ponto importante, ele vai tentar realizar o envio, caso não consegui vai para o proximo caso da planilha.
+        try:
 
-# Estrutura HTML
+            # aqui ele irá usar a guia já existente indo de item a item até finalizar planilha
+            page.goto(link)
 
-email.HTMLBody = f"""<head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> {css} </head> <body> <section class="email"> {conteudo} </section> </body> </html>"""
-email.Send()
+            # Aqui ele aguarda o elemento da barra de pesquisa, para ter certeza que a tela carregou. (se der erro vai para o proximo caso)
+            with page.expect_navigation():  # aguarda o elemento por 30 segundos por padrão
+                page.locator("div[role=\"textbox\"]")
+
+            # Se tudo der certo nas etapas anteriores, ele vai aguardar o botão de envio ficar disponivel e pertar para enviar.
+            with page.expect_navigation():  # aguarda o elemento por 30 segundos por padrão
+                page.locator(
+                    "[data-testid=\"conversation-panel-wrapper\"] button").nth(4).click()
+
+            # Após o envio aguarda 10 segundos para ter certeza que a mensagem foi enviada.
+            time.sleep(10)
+
+        # Caso as etapas anteriores do Try (Tente) derem errado ele vai para o proximo item da planilha, mas você pode colocar a saida que achar melhor.
+        except:
+            continue
+
+
+    # ---------------------
+    # context.close()
+    # browser.close()
+with sync_playwright() as playwright:
+    run(playwright)
+
+print('acabou')

@@ -297,7 +297,7 @@ async def run(playwright: Playwright) -> None:
                 await page.locator('//*[@id="app"]/div/span[4]/div/ul/div/li[1]/div/div[2]').click()
                 await page.locator('//*[@id="app"]/div/div/div[4]/div/div/div[2]/div[1]/div').click()
 
-                if ataualizar1 != str('1'):
+                if atualizar1 != str('1'):
                     # atualiza no banco resposta aqui
                     conectar = mysql.connector.connect(
                         host=cx.h, database=cx.d, user=cx.u, password=cx.p)
@@ -325,18 +325,33 @@ async def run(playwright: Playwright) -> None:
                     continue
                 else:  # se nenhuma condição for atendida, chat informa que não atendeu e sugere reinicio ou selecionar opçãoa anterior enviada.
                     print('entrando no else')
-                    #click p
-                    await page.locator("p").fill(str(msg.elses)) #digitando mensagem
-                    #Press Enter
-                    await page.locator("[data-testid=\"conversation-compose-box-input\"]").press("Enter")#enviando mensagem
+                    # click p
+                    # digitando mensagem
+                    await page.locator("p").fill(str(msg.elses))
+                    # Press Enter
+                    # enviando mensagem
+                    await page.locator("[data-testid=\"conversation-compose-box-input\"]").press("Enter")
                     time.sleep(2)
-                    #Click [data-testid="conversation-menu-button"] [aria-label="Mais opções"]
-                    await page.locator('//*[@id="main]/header/div[3]/div/div[2]/div/div/span').click()#indo em opções do contato
-                    #Click text=Fechar conversa
-                    await page.locator("text=Fechar conversa").click()#fechando conversa
+                    # Click [data-testid="conversation-menu-button"] [aria-label="Mais opções"]
+                    # indo em opções do contato
+                    await page.locator('//*[@id="main]/header/div[3]/div/div[2]/div/div/span').click()
+                    # Click text=Fechar conversa
+                    # fechando conversa
+                    await page.locator("text=Fechar conversa").click()
 
-                    #opções para selecionar apenas não lidas
+                    # opções para selecionar apenas não lidas
                     for i in range(2):
                         await page.locator('//*[@id="side]/div[1]/div/button/div/span').click()
-                    
-                    
+
+                    # apenas não lidas selecionadas
+                    await page.locator('//*[@id="app"]/div/span[4]/div/ul/div/li[1]/div/div[2]').click()
+                    await page.locator('//*[@id="app"]/div/div/div[4]/div/div/div[2]/div[1]/h1').click()
+        except:
+            time.sleep(1)
+            continue
+
+
+async def main() -> None:
+    async with async_playwright() as playwright:
+        await run(playwright)
+asyncio.run(main())
